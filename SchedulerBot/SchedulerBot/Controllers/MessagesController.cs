@@ -59,7 +59,7 @@ namespace SchedulerBot.Controllers
 		/// <param name="activity">The activity.</param>
 		/// <returns>The action result.</returns>
 		[HttpPost]
-		[Authorize(Roles = "Bot", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+		//[Authorize(Roles = "Bot", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 		public async Task<OkResult> Post([FromBody] Activity activity)
 		{
 			if (activity.Type == ActivityTypes.Message)

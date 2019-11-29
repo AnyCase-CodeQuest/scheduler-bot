@@ -8,13 +8,13 @@ namespace SchedulerBot
 	{
 		public static void Main(string[] args) =>
 			BuildWebHost(args)
+				.Build()
 				.EnsureDatabaseMigrated()
 				.Run();
 
-		public static IWebHost BuildWebHost(string[] args) =>
+		public static IWebHostBuilder BuildWebHost(string[] args) =>
 			WebHost.CreateDefaultBuilder(args)
-				.ConfigureAppConfiguration((ctx, builder) => builder.AddAzureSecrets())
-				.UseStartup<Startup>()
-				.Build();
+//				.ConfigureAppConfiguration((ctx, builder) => builder.AddAzureSecrets())
+				.UseStartup<Startup>();
 	}
 }

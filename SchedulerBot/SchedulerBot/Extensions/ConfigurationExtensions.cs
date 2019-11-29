@@ -63,25 +63,25 @@ namespace SchedulerBot.Extensions
 			return host;
 		}
 
-		/// <summary>
-		/// Configures the authentication for the bot.
-		/// </summary>
-		/// <param name="builder">The builder.</param>
-		/// <param name="configuration">The configuration.</param>
-		/// <returns>
-		/// The same authentication builder that is passed as an argument
-		/// so that it can be used in further configuration chain.
-		/// </returns>
-		public static AuthenticationBuilder AddBotAuthentication(
-			this AuthenticationBuilder builder,
-			IConfiguration configuration)
-		{
-			SimpleCredentialProvider credentialProvider = new SimpleCredentialProvider(
-				configuration["Secrets:MicrosoftAppCredentials:Id"],
-				configuration["Secrets:MicrosoftAppCredentials:Password"]);
-
-			return builder.AddBotAuthentication(credentialProvider);
-		}
+//		/// <summary>
+//		/// Configures the authentication for the bot.
+//		/// </summary>
+//		/// <param name="builder">The builder.</param>
+//		/// <param name="configuration">The configuration.</param>
+//		/// <returns>
+//		/// The same authentication builder that is passed as an argument
+//		/// so that it can be used in further configuration chain.
+//		/// </returns>
+//		public static AuthenticationBuilder AddBotAuthentication(
+//			this AuthenticationBuilder builder,
+//			IConfiguration configuration)
+//		{
+//			SimpleCredentialProvider credentialProvider = new SimpleCredentialProvider(
+//				configuration["Secrets:MicrosoftAppCredentials:Id"],
+//				configuration["Secrets:MicrosoftAppCredentials:Password"]);
+//
+//			return builder.AddBotAuthentication(credentialProvider);
+//		}
 
 		/// <summary>
 		/// Configures the authentication scheme used for managing conversations.

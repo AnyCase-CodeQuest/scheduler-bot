@@ -19,7 +19,7 @@
 			"commandName": "IISExpress",
 			"launchBrowser": true,
 			"environmentVariables": {
-				"KEYVAULT_ENDPOINT": "https://scheduler-bot-key-vault.vault.azure.net/",
+				"KEYVAULT_ENDPOINT": "https://scheduler-bot.vault.azure.net/",
 				"ASPNETCORE_ENVIRONMENT": "Production"
 			}
 		},
