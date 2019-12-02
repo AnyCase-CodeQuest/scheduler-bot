@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Configuration;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,15 +21,17 @@ namespace SchedulerBot
 	public class Startup
 	{
 		private readonly IConfiguration configuration;
-		private bool isDevelopment;
+		private readonly IWebHostEnvironment env;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Startup"/> class.
 		/// </summary>
 		/// <param name="configuration">The configuration.</param>
-		public Startup(IConfiguration configuration)
+		/// <param name="env">The environment.</param>
+		public Startup(IConfiguration configuration, IWebHostEnvironment env)
 		{
 			this.configuration = configuration;
+			this.env = env;
 		}
 
 		/// <summary>
@@ -74,7 +75,7 @@ namespace SchedulerBot
 			BotConfiguration botConfig = BotConfiguration.Load(botFilePath, secretKey);
 
 			// Retrieve current endpoint.
-			string environment = isDevelopment ? "development" : "production";
+			string environment = env.IsDevelopment() ? "development" : "production";
 			ConnectedService service = botConfig.Services.FirstOrDefault(s => s.Type == "endpoint" && s.Name == environment);
 			if (!(service is EndpointService endpointService))
 			{
@@ -83,7 +84,7 @@ namespace SchedulerBot
 
 			services.AddBot<Bots.SchedulerBot>(options =>
 			{
-				options.CredentialProvider = new SimpleCredentialProvider(endpointService.AppId, endpointService.AppPassword);
+				//options.CredentialProvider = new SimpleCredentialProvider(endpointService.AppId, endpointService.AppPassword);
 
 				//TODO: Creates a logger for the application to use.
 				//ILogger logger = _loggerFactory.CreateLogger<EchoWithCounterBot>();
@@ -108,11 +109,10 @@ namespace SchedulerBot
 		/// Configures the specified application.
 		/// </summary>
 		/// <param name="app">The application.</param>
-		/// <param name="env">The environment.</param>
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		public void Configure(IApplicationBuilder app)
 		{
-			isDevelopment = env.IsDevelopment();
-			if (env.IsDevelopment())
+			bool isDevelopment = env.IsDevelopment();
+			if (isDevelopment)
 			{
 				app.UseDeveloperExceptionPage();
 			}
