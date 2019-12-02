@@ -8,6 +8,7 @@ using Microsoft.Bot.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using SchedulerBot.DependencyInjection;
 using SchedulerBot.Extensions;
 using SchedulerBot.Infrastructure.Interfaces.Configuration;
@@ -22,16 +23,18 @@ namespace SchedulerBot
 	{
 		private readonly IConfiguration configuration;
 		private readonly IWebHostEnvironment env;
+		private readonly ILogger<Startup> logger;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Startup"/> class.
 		/// </summary>
 		/// <param name="configuration">The configuration.</param>
 		/// <param name="env">The environment.</param>
-		public Startup(IConfiguration configuration, IWebHostEnvironment env)
+		public Startup(IConfiguration configuration, IWebHostEnvironment env, ILogger<Startup> logger)
 		{
 			this.configuration = configuration;
 			this.env = env;
+			this.logger = logger;
 		}
 
 		/// <summary>
@@ -41,6 +44,8 @@ namespace SchedulerBot
 		/// <returns>The service provider.</returns>
 		public IServiceProvider ConfigureServices(IServiceCollection services)
 		{
+			logger.LogInformation("Running ConfigureServices.");
+
 			var value = configuration.GetSection("BotCoreSettings").GetValue<string>("BotFilePath");
 
 			services.AddDbContext();
