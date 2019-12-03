@@ -15,10 +15,10 @@ namespace SchedulerBot.DependencyInjection.Modules
 		{
 			base.Load(builder);
 
-			builder
-				.RegisterType<ScheduledMessageProcessor>()
-				.As<IHostedService>()
-				.SingleInstance();
+//			builder
+//				.RegisterType<ScheduledMessageProcessor>()
+//				.As<IHostedService>()
+//				.SingleInstance();
 		}
 	}
 }

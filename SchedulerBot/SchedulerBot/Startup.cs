@@ -13,6 +13,7 @@ using SchedulerBot.DependencyInjection;
 using SchedulerBot.Extensions;
 using SchedulerBot.Infrastructure.Interfaces.Configuration;
 using SchedulerBot.Middleware;
+using SchedulerBot.Processors;
 
 namespace SchedulerBot
 {
@@ -57,8 +58,9 @@ namespace SchedulerBot
 
 			services.AddDbContext();
 
-
 			services.AddControllers();
+
+			services.AddHostedService<ScheduledMessageProcessor>();
 
 			// source https://docs.microsoft.com/en-us/aspnet/core/mvc/compatibility-version?view=aspnetcore-2.2
 			//services.AddMvc()

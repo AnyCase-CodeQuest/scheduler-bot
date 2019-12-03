@@ -22,7 +22,7 @@ namespace SchedulerBot.Processors
 	/// </summary>
 	/// <seealso cref="IHostedService" />
 	/// <seealso cref="IDisposable" />
-	public sealed class ScheduledMessageProcessor : IHostedService, IDisposable
+	public sealed class ScheduledMessageProcessor : BackgroundService
 	{
 		#region Private Fields
 
@@ -31,8 +31,6 @@ namespace SchedulerBot.Processors
 		private readonly IMessageProcessor messageProcessor;
 		private readonly IScheduleParser scheduleParser;
 		private readonly TimeSpan pollingInterval;
-		private readonly CancellationTokenSource serviceCancellationTokenSource;
-		private readonly CancellationToken serviceCancellationToken;
 
 		#endregion
 
@@ -59,24 +57,19 @@ namespace SchedulerBot.Processors
 			this.messageProcessor = messageProcessor;
 
 			pollingInterval = configuration.MessageProcessingInterval;
-			serviceCancellationTokenSource = new CancellationTokenSource();
-			serviceCancellationToken = serviceCancellationTokenSource.Token;
 		}
 
 		#endregion
 
 		#region IHostedService Implementation
 
-		/// <inheritdoc />
-		public async Task StartAsync(CancellationToken cancellationToken)
+		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			logger.LogInformation("Starting polling");
-
-			while (!serviceCancellationTokenSource.IsCancellationRequested)
+			while (!stoppingToken.IsCancellationRequested)
 			{
 				try
 				{
-					await ProcessScheduledMessagesAsync();
+					await ProcessScheduledMessagesAsync(stoppingToken);
 				}
 				catch (Exception exception)
 				{
@@ -84,38 +77,32 @@ namespace SchedulerBot.Processors
 				}
 				finally
 				{
-					await WaitAsync();
+					await WaitAsync(stoppingToken);
 				}
 			}
-
-			logger.LogInformation("Polling stopped");
 		}
 
 		/// <inheritdoc />
-		public Task StopAsync(CancellationToken cancellationToken)
+		public override Task StartAsync(CancellationToken cancellationToken)
+		{
+			logger.LogInformation("Starting polling");
+
+			return base.StartAsync(cancellationToken);
+		}
+
+		/// <inheritdoc />
+		public override Task StopAsync(CancellationToken cancellationToken)
 		{
 			logger.LogInformation("Stopping polling");
-			serviceCancellationTokenSource.Cancel();
 
-			// TODO: make this wait for the real cancellation.
-			return Task.CompletedTask;
-		}
-
-		#endregion
-
-		#region IDisposable Implementation
-
-		/// <inheritdoc />
-		public void Dispose()
-		{
-			serviceCancellationTokenSource?.Dispose();
+			return base.StopAsync(cancellationToken);
 		}
 
 		#endregion
 
 		#region Private Methods
 
-		private async Task ProcessScheduledMessagesAsync()
+		private async Task ProcessScheduledMessagesAsync(CancellationToken stoppingToken)
 		{
 			logger.LogInformation("Starting to process scheduled messages queue");
 
@@ -135,7 +122,7 @@ namespace SchedulerBot.Processors
 
 						logger.LogInformation("Processing scheduled message '{0}'", scheduledMessageId);
 
-						await messageProcessor.SendMessageAsync(scheduledMessage, serviceCancellationToken);
+						await messageProcessor.SendMessageAsync(scheduledMessage, stoppingToken);
 
 						scheduledMessageEvent.State = ScheduledMessageEventState.Completed;
 						AddPendingEvent(scheduledMessage);
@@ -155,19 +142,19 @@ namespace SchedulerBot.Processors
 					}
 				}
 
-				await unitOfWork.SaveChangesAsync(serviceCancellationToken);
+				await unitOfWork.SaveChangesAsync(stoppingToken);
 			}
 
 			logger.LogInformation("Finished processing scheduled messages queue");
 		}
 
-		private async Task WaitAsync()
+		private async Task WaitAsync(CancellationToken stoppingToken)
 		{
 			try
 			{
 				logger.LogInformation("Waiting for the next poll");
 
-				await Task.Delay(pollingInterval, serviceCancellationToken);
+				await Task.Delay(pollingInterval, stoppingToken);
 			}
 			catch (TaskCanceledException)
 			{
