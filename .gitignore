@@ -292,3 +292,4 @@ __pycache__/
 
 # Web UI build artifacts
 SchedulerBot/SchedulerBot/wwwroot/
+SchedulerBot/SchedulerBot/logs/

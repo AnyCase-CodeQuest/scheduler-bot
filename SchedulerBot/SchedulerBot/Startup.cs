@@ -24,17 +24,25 @@ namespace SchedulerBot
 		private readonly IConfiguration configuration;
 		private readonly IWebHostEnvironment env;
 		private readonly ILogger<Startup> logger;
+		private readonly ILoggerFactory loggerFactory;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Startup"/> class.
 		/// </summary>
 		/// <param name="configuration">The configuration.</param>
 		/// <param name="env">The environment.</param>
-		public Startup(IConfiguration configuration, IWebHostEnvironment env, ILogger<Startup> logger)
+		/// <param name="logger">The logger.</param>
+		/// <param name="loggerFactory">The logger factory.</param>
+		public Startup(
+			IConfiguration configuration,
+			IWebHostEnvironment env,
+			ILogger<Startup> logger,
+			ILoggerFactory loggerFactory)
 		{
 			this.configuration = configuration;
 			this.env = env;
 			this.logger = logger;
+			this.loggerFactory = loggerFactory;
 		}
 
 		/// <summary>
@@ -45,8 +53,7 @@ namespace SchedulerBot
 		public IServiceProvider ConfigureServices(IServiceCollection services)
 		{
 			logger.LogInformation("Running ConfigureServices.");
-
-			var value = configuration.GetSection("BotCoreSettings").GetValue<string>("BotFilePath");
+			logger.LogCritical("LogCritical ConfigureServices.");
 
 			services.AddDbContext();
 
@@ -71,7 +78,7 @@ namespace SchedulerBot
 			//				.AddBotAuthentication(configuration)
 			//				.AddManageConversationAuthentication(configuration);
 			//			services.AddMvc(options => options.Filters.Add<TrustServiceUrlAttribute>());
-			services.AddSpaStaticFiles(options => options.RootPath = "wwwroot");
+			//services.AddSpaStaticFiles(options => options.RootPath = "wwwroot");
 
 			// Loads .bot configuration file and adds a singleton that your Bot can access through dependency injection.
 			string botFilePath = configuration.GetValue<string>("BotCoreSettings:BotFilePath");
@@ -92,14 +99,14 @@ namespace SchedulerBot
 				//options.CredentialProvider = new SimpleCredentialProvider(endpointService.AppId, endpointService.AppPassword);
 
 				//TODO: Creates a logger for the application to use.
-				//ILogger logger = _loggerFactory.CreateLogger<EchoWithCounterBot>();
+				ILogger schedulerBotLogger = loggerFactory.CreateLogger<Bots.SchedulerBot>();
 
 				// Catches any errors that occur during a conversation turn and logs them.
-				//options.OnTurnError = async (context, exception) =>
-				//{
-				//	logger.LogError($"Exception caught : {exception}");
-				//	await context.SendActivityAsync("Sorry, it looks like something went wrong.");
-				//};
+				options.OnTurnError = async (context, exception) =>
+				{
+					schedulerBotLogger.LogError($"Exception caught : {exception}");
+					await context.SendActivityAsync("Sorry, it looks like something went wrong.");
+				};
 			});
 
 			ServiceProviderBuilder serviceProviderBuilder = new ServiceProviderBuilder();
@@ -140,15 +147,15 @@ namespace SchedulerBot
 					pattern: "{controller}/{action=Index}/{id?}");
 			});
 
-			app.UseSpa(builder =>
-			{
-				builder.Options.SourcePath = "ClientApp";
+			//app.UseSpa(builder =>
+			//{
+			//	builder.Options.SourcePath = "ClientApp";
 
-				if (isDevelopment)
-				{
-					builder.UseAngularCliServer(npmScript: "start");
-				}
-			});
+			//	if (isDevelopment)
+			//	{
+			//		builder.UseAngularCliServer(npmScript: "start");
+			//	}
+			//});
 		}
 	}
 }

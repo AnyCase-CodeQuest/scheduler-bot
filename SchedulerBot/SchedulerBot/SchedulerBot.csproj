@@ -29,17 +29,17 @@
     <ProjectReference Include="..\SchedulerBot.DependencyInjection\SchedulerBot.DependencyInjection.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <Folder Include="ClientApp\" CopyToPublishDirectory="Never" />
     <Folder Include="wwwroot\" />
-  </ItemGroup>
+  </ItemGroup>-->
 
-  <Target Name="PublishBuildAngular" AfterTargets="ComputeFilesToPublish">
-    <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
+  <!--<Target Name="PublishBuildAngular" AfterTargets="ComputeFilesToPublish">
+    --><!-- As part of publishing, ensure the JS resources are freshly built in production mode --><!--
     <CallTarget Targets="InstallNpmModules" />
     <Exec Command="node_modules\.bin\ng build -prod" WorkingDirectory="ClientApp" />
 
-    <!-- Include the newly-built files in the publish output -->
+    --><!-- Include the newly-built files in the publish output --><!--
     <ItemGroup>
       <DistFiles Include="wwwroot\**" />
       <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
@@ -51,6 +51,6 @@
 
   <Target Name="InstallNpmModules" AfterTargets="Rebuild">
     <Exec Command="npm install" WorkingDirectory="ClientApp" />
-  </Target>
+  </Target>-->
 
 </Project>
