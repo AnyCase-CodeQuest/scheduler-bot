@@ -62,26 +62,6 @@ namespace SchedulerBot
 
 			services.AddHostedService<ScheduledMessageProcessor>();
 
-			// source https://docs.microsoft.com/en-us/aspnet/core/mvc/compatibility-version?view=aspnetcore-2.2
-			//services.AddMvc()
-			//	// Include the 2.2 behaviors
-			//	.SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
-			//	// Except for the following.
-			//	.AddMvcOptions(options =>
-			//	{
-			//		// TODO:
-			//		//// Don't combine authorize filters (keep 2.0 behavior).
-			//		//options.AllowCombiningAuthorizeFilters = false;
-			//		//// All exceptions thrown by an IInputFormatter are treated
-			//		//// as model state errors (keep 2.0 behavior).
-			//		//options.InputFormatterExceptionPolicy = InputFormatterExceptionPolicy.AllExceptions;
-			//	});
-			//			services.AddAuthentication()
-			//				.AddBotAuthentication(configuration)
-			//				.AddManageConversationAuthentication(configuration);
-			//			services.AddMvc(options => options.Filters.Add<TrustServiceUrlAttribute>());
-			//services.AddSpaStaticFiles(options => options.RootPath = "wwwroot");
-
 			// Loads .bot configuration file and adds a singleton that your Bot can access through dependency injection.
 			string botFilePath = configuration.GetValue<string>("BotCoreSettings:BotFilePath");
 			string secretKey = configuration.GetValue<string>("BotCoreSettings:SecretKey");
