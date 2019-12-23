@@ -45,16 +45,14 @@ namespace SchedulerBot.Infrastructure.BotConnector
 				Uri serviceUri = new Uri(serviceUrl);
 				Activity activity = CreateBotMessageActivity(scheduledMessage);
 
-				if (!MicrosoftAppCredentials.IsTrustedServiceUrl(serviceUrl))
+				if (!AppCredentials.IsTrustedServiceUrl(serviceUrl))
 				{
-					MicrosoftAppCredentials.TrustServiceUrl(serviceUrl);
+					AppCredentials.TrustServiceUrl(serviceUrl);
 				}
 
-				using (ConnectorClient connector = new ConnectorClient(serviceUri, credentials))
-				{
-					logger.LogInformation($"Sending message to conversation RecipientId: ${activity.Recipient.Id}.");
-					await connector.Conversations.SendToConversationAsync(activity, cancellationToken);
-				}
+				using ConnectorClient connector = new ConnectorClient(serviceUri, credentials);
+				logger.LogInformation($"Sending message to conversation RecipientId: ${activity.Recipient.Id}.");
+				await connector.Conversations.SendToConversationAsync(activity, cancellationToken);
 			}
 			else
 			{
@@ -63,7 +61,7 @@ namespace SchedulerBot.Infrastructure.BotConnector
 		}
 
 		/// <inheritdoc />
-		public Task<ResourceResponse> ReplyAsync(Activity activity, string replyText, CancellationToken cancellationToken)
+		public async Task<ResourceResponse> ReplyAsync(Activity activity, string replyText, CancellationToken cancellationToken)
 		{
 			if (!cancellationToken.IsCancellationRequested)
 			{
@@ -73,7 +71,7 @@ namespace SchedulerBot.Infrastructure.BotConnector
 
 				using (ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl), credentials))
 				{
-					return connector.Conversations.ReplyToActivityAsync(reply, cancellationToken);
+					return await connector.Conversations.ReplyToActivityAsync(reply, cancellationToken);
 				}
 			}
 
