@@ -36,8 +36,7 @@ namespace SchedulerBot.Extensions
 			{
 				AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
 				KeyVaultClient keyVaultClient = new KeyVaultClient(
-					new KeyVaultClient.AuthenticationCallback(
-						azureServiceTokenProvider.KeyVaultTokenCallback));
+					new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
 				builder.AddAzureKeyVault(
 					keyVaultEndpoint, keyVaultClient, new DefaultKeyVaultSecretManager());
 			}

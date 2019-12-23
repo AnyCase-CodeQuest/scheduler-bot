@@ -35,7 +35,7 @@ namespace SchedulerBot
 
 		public static IWebHostBuilder BuildWebHost(string[] args) =>
 			WebHost.CreateDefaultBuilder(args)
-//				.ConfigureAppConfiguration((ctx, builder) => builder.AddAzureSecrets())
+				.ConfigureAppConfiguration((ctx, builder) => builder.AddAzureSecrets())
 				.UseStartup<Startup>()
 				.ConfigureLogging(logging =>
 				{
